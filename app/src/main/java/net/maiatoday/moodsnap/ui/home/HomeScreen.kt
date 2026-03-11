@@ -1,68 +1,74 @@
 package net.maiatoday.moodsnap.ui.home
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import net.maiatoday.moodsnap.data.MoodEntry
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onAddEntry: () -> Unit,
-    onEntryClick: (Int) -> Unit
+    onHistoryClick: () -> Unit
 ) {
-    val entries by viewModel.entries.collectAsState()
-
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Home") },
+                actions = {
+                    IconButton(onClick = onHistoryClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.List,
+                            contentDescription = "History"
+                        )
+                    }
+                    IconButton(onClick = { /* No action */ }) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings"
+                        )
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddEntry) {
                 Icon(Icons.Default.Add, contentDescription = "Add Entry")
             }
         }
     ) { paddingValues ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
         ) {
-            items(entries) { entry ->
-                MoodEntryItem(entry = entry, onClick = { onEntryClick(entry.id) })
-            }
+            Text("Home Dashboard")
         }
     }
 }
 
+@Preview
 @Composable
-fun MoodEntryItem(entry: MoodEntry, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable(onClick = onClick)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Score: ${entry.moodScore}")
-            Text("Tags: ${entry.tags.joinToString()}")
-            Text("Notes: ${entry.notes}")
-            Text("Energy: ${entry.energy}")
-        }
-    }
+fun HomeScreenPreview() {
+    HomeScreen(
+        onAddEntry = {},
+        onHistoryClick = {}
+    )
 }

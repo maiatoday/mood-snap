@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import net.maiatoday.moodsnap.ui.addedit.AddEditScreen
 import net.maiatoday.moodsnap.ui.home.HomeScreen
+import net.maiatoday.moodsnap.ui.history.MoodHistoryScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -15,6 +16,11 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Home.route) {
             HomeScreen(
                 onAddEntry = { navController.navigate(Screen.AddEdit.createRoute(null)) },
+                onHistoryClick = { navController.navigate(Screen.History.route) }
+            )
+        }
+        composable(Screen.History.route) {
+            MoodHistoryScreen(
                 onEntryClick = { entryId -> navController.navigate(Screen.AddEdit.createRoute(entryId)) }
             )
         }
