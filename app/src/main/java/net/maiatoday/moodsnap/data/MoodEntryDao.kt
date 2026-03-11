@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 @Dao
 interface MoodEntryDao {
@@ -15,6 +16,9 @@ interface MoodEntryDao {
 
     @Query("SELECT * FROM mood_entries WHERE id = :id")
     fun getEntryById(id: Int): Flow<MoodEntry?>
+
+    @Query("SELECT * FROM mood_entries WHERE timestamp >= :startDate ORDER BY timestamp DESC")
+    fun getEntriesFromDate(startDate: Date): Flow<List<MoodEntry>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(entry: MoodEntry): Long

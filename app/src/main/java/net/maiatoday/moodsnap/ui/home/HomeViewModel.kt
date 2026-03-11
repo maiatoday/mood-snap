@@ -6,19 +6,19 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import net.maiatoday.moodsnap.data.MoodEntry
-import net.maiatoday.moodsnap.domain.GetMoodEntriesUseCase
+import net.maiatoday.moodsnap.domain.GetWeeklySummaryUseCase
+import net.maiatoday.moodsnap.domain.WeeklySummary
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    getMoodEntriesUseCase: GetMoodEntriesUseCase
+    getWeeklySummaryUseCase: GetWeeklySummaryUseCase
 ) : ViewModel() {
 
-    val entries: StateFlow<List<MoodEntry>> = getMoodEntriesUseCase()
+    val summary: StateFlow<WeeklySummary?> = getWeeklySummaryUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+            initialValue = null
         )
 }
