@@ -23,10 +23,10 @@ graph LR
     Dev --> UI[UI: Multimodal & Figma MCP]
     Dev --> Nav[Nav: Navigation 3 & Deeplinks]
     Dev --> Logic[Logic: Algorithm Deep-dive]
-    Dev --> Refactor[Refactor: JUnit 4 to 5]
     Dev --> Bonus[Bonus: Add a notification]
 
     %% Quality & Ops
+    QA --> Refactor[Refactor: JUnit 4 to 5]
     QA --> Testing[Journeys: Natural Language E2E]
     QA --> Debug[Agent Mode: Device Debugging]
     QA --> PR[Changes Drawer: AI PR Writing]
