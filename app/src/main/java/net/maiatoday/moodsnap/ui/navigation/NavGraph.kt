@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import net.maiatoday.moodsnap.ui.addedit.AddEditScreen
 import net.maiatoday.moodsnap.ui.home.HomeScreen
 import net.maiatoday.moodsnap.ui.history.MoodHistoryScreen
@@ -29,6 +30,9 @@ fun NavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("entryId") {
                 type = NavType.IntType
                 defaultValue = -1
+            }),
+            deepLinks = listOf(navDeepLink {
+                uriPattern = "moodsnap://${Screen.AddEdit.route}"
             })
         ) {
             AddEditScreen(
