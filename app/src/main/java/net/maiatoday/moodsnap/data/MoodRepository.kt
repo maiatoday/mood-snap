@@ -13,8 +13,11 @@ interface MoodRepository {
 
     // Tag related methods
     fun getAllTags(): Flow<List<Tag>>
+    fun getAllEntriesWithTags(): Flow<List<MoodEntryWithTags>>
     fun getEntryWithTagsById(id: Int): Flow<MoodEntryWithTags?>
+    fun getEntriesWithTagsFromDate(startDate: Date): Flow<List<MoodEntryWithTags>>
     suspend fun insertTag(tag: Tag)
     suspend fun addTagToEntry(entryId: Int, tagName: String)
     suspend fun removeTagFromEntry(entryId: Int, tagName: String)
+    suspend fun updateTagsForEntry(entryId: Int, tags: List<String>)
 }

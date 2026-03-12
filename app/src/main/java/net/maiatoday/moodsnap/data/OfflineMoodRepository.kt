@@ -1,5 +1,6 @@
 package net.maiatoday.moodsnap.data
 
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 import javax.inject.Inject
@@ -23,7 +24,11 @@ class OfflineMoodRepository @Inject constructor(
     // Tag related methods
     override fun getAllTags(): Flow<List<Tag>> = tagDao.getAllTags()
 
+    override fun getAllEntriesWithTags(): Flow<List<MoodEntryWithTags>> = moodEntryDao.getEntriesWithTags()
+
     override fun getEntryWithTagsById(id: Int): Flow<MoodEntryWithTags?> = moodEntryDao.getEntryWithTagsById(id)
+
+    override fun getEntriesWithTagsFromDate(startDate: Date): Flow<List<MoodEntryWithTags>> = moodEntryDao.getEntriesWithTagsFromDate(startDate)
 
     override suspend fun insertTag(tag: Tag) = tagDao.insert(tag)
 
@@ -35,5 +40,16 @@ class OfflineMoodRepository @Inject constructor(
     override suspend fun removeTagFromEntry(entryId: Int, tagName: String) {
         val crossRef = MoodEntryTagCrossRef(moodEntryId = entryId, tagName = tagName)
         moodEntryDao.deleteMoodEntryTagCrossRef(crossRef)
+    }
+
+    @Transaction
+    override suspend fun updateTagsForEntry(entryId: Int, tags: List<String>) {
+        // Clear existing tags for this entry
+        moodEntryDao.deleteTagsForEntry(entryId)
+        // Add new tags
+        tags.forEach { tagName ->
+            val crossRef = MoodEntryTagCrossRef(moodEntryId = entryId, tagName = tagName)
+            moodEntryDao.insertMoodEntryTagCrossRef(crossRef)
+        }
     }
 }

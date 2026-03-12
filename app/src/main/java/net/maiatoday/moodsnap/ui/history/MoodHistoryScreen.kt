@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.maiatoday.moodsnap.data.MoodEntry
+import net.maiatoday.moodsnap.data.MoodEntryWithTags
 import java.util.Date
 
 @Composable
@@ -31,14 +32,17 @@ fun MoodHistoryScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        items(entries) { entry ->
-            MoodEntryItem(entry = entry, onClick = { onEntryClick(entry.id) })
+        items(entries) { entryWithTags ->
+            MoodEntryItem(entryWithTags = entryWithTags, onClick = { onEntryClick(entryWithTags.moodEntry.id) })
         }
     }
 }
 
 @Composable
-fun MoodEntryItem(entry: MoodEntry, onClick: () -> Unit) {
+fun MoodEntryItem(entryWithTags: MoodEntryWithTags, onClick: () -> Unit) {
+    val entry = entryWithTags.moodEntry
+    val tags = entryWithTags.tags.map { it.name }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,7 +51,7 @@ fun MoodEntryItem(entry: MoodEntry, onClick: () -> Unit) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Score: ${entry.moodScore}")
-            Text("Tags: ${entry.tags.joinToString()}")
+            Text("Tags: ${tags.joinToString()}")
             Text("Notes: ${entry.notes}")
             Text("Energy: ${entry.energy}")
         }
@@ -61,12 +65,15 @@ fun MoodHistoryScreenPreview() {
         id = 1,
         moodScore = 4,
         timestamp = Date(),
-        tags = listOf("happy", "work"),
         notes = "Great day!",
         energy = 5,
         movement = true,
         sunlight = true,
         sleep = true
+    )
+    val sampleEntryWithTags = MoodEntryWithTags(
+        moodEntry = sampleEntry,
+        tags = emptyList()
     )
     
     LazyColumn(
@@ -74,8 +81,8 @@ fun MoodHistoryScreenPreview() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        items(listOf(sampleEntry)) { entry ->
-            MoodEntryItem(entry = entry, onClick = {})
+        items(listOf(sampleEntryWithTags)) { entry ->
+            MoodEntryItem(entryWithTags = entry, onClick = {})
         }
     }
 }

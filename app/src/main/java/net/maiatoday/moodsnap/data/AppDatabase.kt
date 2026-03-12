@@ -10,7 +10,7 @@ import androidx.room.TypeConverters
         Tag::class,
         MoodEntryTagCrossRef::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

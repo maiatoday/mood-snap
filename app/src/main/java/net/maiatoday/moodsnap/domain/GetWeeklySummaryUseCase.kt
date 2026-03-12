@@ -2,7 +2,7 @@ package net.maiatoday.moodsnap.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import net.maiatoday.moodsnap.data.MoodEntry
+import net.maiatoday.moodsnap.data.MoodEntryWithTags
 import net.maiatoday.moodsnap.data.MoodRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -10,14 +10,14 @@ import java.util.Locale
 import javax.inject.Inject
 
 data class WeeklySummary(
-    val averageMood: Float,
-    val averageEnergy: Float,
-    val movementCount: Int,
-    val sunlightCount: Int,
-    val sleepCount: Int,
-    val tags: List<String>,
-    val dailyMoods: List<DailyMood>,
-    val currentMood: Int?
+    val averageMood: Float = 0f,
+    val averageEnergy: Float = 0f,
+    val movementCount: Int = 0,
+    val sunlightCount: Int = 0,
+    val sleepCount: Int = 0,
+    val tags: List<String> = emptyList(),
+    val dailyMoods: List<DailyMood> = emptyList(),
+    val currentMood: Int? = null
 )
 
 data class DailyMood(
@@ -38,20 +38,24 @@ class GetWeeklySummaryUseCase @Inject constructor(
         
         val sevenDaysAgo = calendar.time
 
-        return moodRepository.getEntriesFromDate(sevenDaysAgo).map { entries ->
-            calculateSummary(entries)
+        return moodRepository.getEntriesWithTagsFromDate(sevenDaysAgo).map { entriesWithTags ->
+            calculateSummary(entriesWithTags)
         }
     }
 
-    private fun calculateSummary(entries: List<MoodEntry>): WeeklySummary {
-        val averageMood = if (entries.isNotEmpty()) entries.map { it.moodScore }.average().toFloat() else 0f
-        val averageEnergy = if (entries.isNotEmpty()) entries.map { it.energy }.average().toFloat() else 0f
+    private fun calculateSummary(entriesWithTags: List<MoodEntryWithTags>): WeeklySummary {
+        if (entriesWithTags.isEmpty()) return WeeklySummary()
+
+        val entries = entriesWithTags.map { it.moodEntry }
+        
+        val averageMood = entries.map { it.moodScore }.average().toFloat()
+        val averageEnergy = entries.map { it.energy }.average().toFloat()
         
         val movementCount = entries.count { it.movement }
         val sunlightCount = entries.count { it.sunlight }
         val sleepCount = entries.count { it.sleep }
         
-        val tags = entries.flatMap { it.tags }.distinct()
+        val tags = entriesWithTags.flatMap { it.tags }.map { it.name }.distinct()
         
         val dateFormat = SimpleDateFormat("EEE", Locale.getDefault())
         
@@ -63,7 +67,6 @@ class GetWeeklySummaryUseCase @Inject constructor(
             }
             .map { (_, dailyEntries) ->
                 val avgScore = dailyEntries.map { it.moodScore }.average().toInt()
-                // Use the timestamp of the first entry for sorting and label
                 val firstEntry = dailyEntries.first()
                 val dayLabel = dateFormat.format(firstEntry.timestamp)
                 firstEntry.timestamp.time to DailyMood(dayLabel, avgScore)
@@ -71,7 +74,7 @@ class GetWeeklySummaryUseCase @Inject constructor(
             .sortedBy { it.first }
             .map { it.second }
 
-        val currentMood = entries.maxByOrNull { it.timestamp }?.moodScore
+        val currentMood = entries.maxByOrNull { it.timestamp.time }?.moodScore
         
         return WeeklySummary(
             averageMood = averageMood,

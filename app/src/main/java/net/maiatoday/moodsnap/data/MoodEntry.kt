@@ -9,7 +9,6 @@ data class MoodEntry(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val moodScore: Int,
-    val tags: List<String>,
     val notes: String,
     val movement: Boolean,
     val sunlight: Boolean,

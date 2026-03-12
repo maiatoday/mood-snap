@@ -21,6 +21,10 @@ interface MoodEntryDao {
     @Query("SELECT * FROM mood_entries WHERE timestamp >= :startDate ORDER BY timestamp DESC")
     fun getEntriesFromDate(startDate: Date): Flow<List<MoodEntry>>
 
+    @Transaction
+    @Query("SELECT * FROM mood_entries WHERE timestamp >= :startDate ORDER BY timestamp DESC")
+    fun getEntriesWithTagsFromDate(startDate: Date): Flow<List<MoodEntryWithTags>>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(entry: MoodEntry): Long
 
