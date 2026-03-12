@@ -10,4 +10,11 @@ interface MoodRepository {
     suspend fun insert(entry: MoodEntry): Long
     suspend fun update(entry: MoodEntry)
     suspend fun delete(entry: MoodEntry)
+
+    // Tag related methods
+    fun getAllTags(): Flow<List<Tag>>
+    fun getEntryWithTagsById(id: Int): Flow<MoodEntryWithTags?>
+    suspend fun insertTag(tag: Tag)
+    suspend fun addTagToEntry(entryId: Int, tagName: String)
+    suspend fun removeTagFromEntry(entryId: Int, tagName: String)
 }

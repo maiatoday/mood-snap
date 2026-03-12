@@ -5,7 +5,8 @@ import java.util.Date
 import javax.inject.Inject
 
 class OfflineMoodRepository @Inject constructor(
-    private val moodEntryDao: MoodEntryDao
+    private val moodEntryDao: MoodEntryDao,
+    private val tagDao: TagDao
 ) : MoodRepository {
     override fun getAllEntries(): Flow<List<MoodEntry>> = moodEntryDao.getAllEntries()
 
@@ -18,4 +19,21 @@ class OfflineMoodRepository @Inject constructor(
     override suspend fun update(entry: MoodEntry) = moodEntryDao.update(entry)
 
     override suspend fun delete(entry: MoodEntry) = moodEntryDao.delete(entry)
+
+    // Tag related methods
+    override fun getAllTags(): Flow<List<Tag>> = tagDao.getAllTags()
+
+    override fun getEntryWithTagsById(id: Int): Flow<MoodEntryWithTags?> = moodEntryDao.getEntryWithTagsById(id)
+
+    override suspend fun insertTag(tag: Tag) = tagDao.insert(tag)
+
+    override suspend fun addTagToEntry(entryId: Int, tagName: String) {
+        val crossRef = MoodEntryTagCrossRef(moodEntryId = entryId, tagName = tagName)
+        moodEntryDao.insertMoodEntryTagCrossRef(crossRef)
+    }
+
+    override suspend fun removeTagFromEntry(entryId: Int, tagName: String) {
+        val crossRef = MoodEntryTagCrossRef(moodEntryId = entryId, tagName = tagName)
+        moodEntryDao.deleteMoodEntryTagCrossRef(crossRef)
+    }
 }
