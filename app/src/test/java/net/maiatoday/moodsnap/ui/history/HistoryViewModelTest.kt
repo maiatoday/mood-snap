@@ -10,10 +10,10 @@ import kotlinx.coroutines.test.setMain
 import net.maiatoday.moodsnap.data.FakeMoodRepository
 import net.maiatoday.moodsnap.data.MoodEntry
 import net.maiatoday.moodsnap.domain.GetMoodEntriesUseCase
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -24,7 +24,7 @@ class HistoryViewModelTest {
     private lateinit var getMoodEntriesUseCase: GetMoodEntriesUseCase
     private val testDispatcher = StandardTestDispatcher()
 
-    @Before
+    @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         repository = FakeMoodRepository()
@@ -32,7 +32,7 @@ class HistoryViewModelTest {
         viewModel = HistoryViewModel(getMoodEntriesUseCase)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         Dispatchers.resetMain()
     }

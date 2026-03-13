@@ -7,9 +7,9 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.maiatoday.moodsnap.data.FakeMoodRepository
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
@@ -17,7 +17,7 @@ class SettingsViewModelTest {
     private lateinit var repository: FakeMoodRepository
     private val testDispatcher = StandardTestDispatcher()
 
-    @Before
+    @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         repository = FakeMoodRepository()
@@ -26,22 +26,22 @@ class SettingsViewModelTest {
 
     @Test
     fun `generateSampleData adds entries`() = runTest {
-        assertTrue("Repository should be empty", repository.entriesList().isEmpty())
+        assertTrue(repository.entriesList().isEmpty(), "Repository should be empty")
         
         viewModel.generateSampleData()
         testDispatcher.scheduler.advanceUntilIdle()
         
-        assertTrue("Repository should have entries", repository.entriesList().isNotEmpty())
+        assertTrue(repository.entriesList().isNotEmpty(), "Repository should have entries")
     }
 
     @Test
     fun `clearAllData removes entries`() = runTest {
         repository.generateSampleData()
-        assertTrue("Repository should have entries", repository.entriesList().isNotEmpty())
+        assertTrue(repository.entriesList().isNotEmpty(), "Repository should have entries")
         
         viewModel.clearAllData()
         testDispatcher.scheduler.advanceUntilIdle()
         
-        assertTrue("Repository should be empty", repository.entriesList().isEmpty())
+        assertTrue(repository.entriesList().isEmpty(), "Repository should be empty")
     }
 }

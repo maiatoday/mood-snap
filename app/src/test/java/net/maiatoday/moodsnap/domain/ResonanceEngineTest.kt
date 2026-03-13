@@ -1,79 +1,108 @@
 package net.maiatoday.moodsnap.domain
 
 import net.maiatoday.moodsnap.data.MoodEntry
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 
 class ResonanceEngineTest {
 
     private lateinit var engine: ResonanceEngine
 
-    @Before
+    @BeforeEach
     fun setup() {
         engine = ResonanceEngine()
     }
 
+    private fun createEntry(score: Int, daysAgo: Int): MoodEntry {
+        val now = System.currentTimeMillis()
+        val timestamp = Date(now - (1000L * 60 * 60 * 24 * daysAgo))
+        return MoodEntry(
+            moodScore = score,
+            notes = "Test entry",
+            movement = false,
+            sunlight = false,
+            sleep = false,
+            timestamp = timestamp
+        )
+    }
+
     @Test
-    fun `compute should return zero when given an empty list of mood entries`() {
+    fun `empty list returns zero`() {
         val result = engine.compute(emptyList())
         assertEquals(0.0, result, 0.001)
     }
 
-    @Test
-    fun `compute should result in a score closer to recent entries due to exponential decay`() {
+    @ParameterizedTest(name = "Score {0} from {1} days ago returns {0}")
+    @CsvSource(
+        "1, 0",
+        "5, 0",
+        "3, 10",
+        "4, 30"
+    )
+    fun `single entry returns its own score`(score: Int, daysAgo: Int) {
+        val entry = createEntry(score, daysAgo)
+        val result = engine.compute(listOf(entry))
+        assertEquals(score.toDouble(), result, 0.001)
+    }
 
-        val now = System.currentTimeMillis()
-        
-        // 10 days ago, score 1
-        val tenDaysAgo = Date(now - (1000L * 60 * 60 * 24 * 10))
-        val oldEntry = MoodEntry(
-            moodScore = 1,
-            notes = "Old entry",
-            movement = false,
-            sunlight = false,
-            sleep = false,
-            timestamp = tenDaysAgo
+    @ParameterizedTest(name = "Multiple entries with score {0} return {0}")
+    @ValueSource(ints = [1, 3, 5])
+    fun `multiple entries with same score return that score`(score: Int) {
+        val entries = listOf(
+            createEntry(score, 0),
+            createEntry(score, 5),
+            createEntry(score, 10)
         )
-        
-        // Now, score 5
-        val newEntry = MoodEntry(
-            moodScore = 5,
-            notes = "New entry",
-            movement = false,
-            sunlight = false,
-            sleep = false,
-            timestamp = Date(now)
-        )
-
-        val result = engine.compute(listOf(oldEntry, newEntry))
-        
-        // Because of exponential decay, the result should be closer to 5 than 1.
-        // A simple average would be 3.0.
-        assertTrue("Resonance ($result) should be significantly greater than simple average (3.0)", result > 3.0)
+        val result = engine.compute(entries)
+        assertEquals(score.toDouble(), result, 0.001)
     }
 
     @Test
-    fun `compute should return the exact mood score when only one entry is provided`() {
+    fun `recent entries have more weight than older entries`() {
+        // Simple average of 1 and 5 is 3.0
+        val oldEntry = createEntry(1, 10)
+        val newEntry = createEntry(5, 0)
 
-        val now = System.currentTimeMillis()
-        
-        // A single score of 5 from 10 days ago
-        val tenDaysAgo = Date(now - (1000L * 60 * 60 * 24 * 10))
-        val oldEntry = MoodEntry(
-            moodScore = 5,
-            notes = "Old",
-            movement = false,
-            sunlight = false,
-            sleep = false,
-            timestamp = tenDaysAgo
-        )
+        val result = engine.compute(listOf(oldEntry, newEntry))
 
-        val result = engine.compute(listOf(oldEntry))
-        
-        // For a single entry, the weighted average is just the score itself
-        assertEquals(5.0, result, 0.001)
+        // Because of exponential decay, the result should be weighted towards the recent 5
+        assertTrue(result > 3.0, "Resonance ($result) should be closer to recent mood (5) than old mood (1)")
+    }
+
+    @ParameterizedTest(name = "Old score {0} vs new score {1} results in resonance shifted towards {1}")
+    @CsvSource(
+        "1, 5",
+        "5, 1"
+    )
+    fun `resonance follows the trend of recent moods`(oldScore: Int, newScore: Int) {
+        val oldEntry = createEntry(oldScore, 10)
+        val newEntry = createEntry(newScore, 0)
+        val average = (oldScore + newScore) / 2.0
+
+        val result = engine.compute(listOf(oldEntry, newEntry))
+
+        if (newScore > oldScore) {
+            assertTrue(result > average, "Resonance ($result) should be above average ($average) when trend is upward")
+        } else {
+            assertTrue(result < average, "Resonance ($result) should be below average ($average) when trend is downward")
+        }
+    }
+
+    @Test
+    fun `very old entries have negligible impact`() {
+        val veryOldEntry = createEntry(1, 100) // 100 days ago
+        val recentEntry = createEntry(5, 0)    // Today
+
+        val result = engine.compute(listOf(veryOldEntry, recentEntry))
+
+        // With lambda 0.15, e^(-0.15 * 100) is basically 0.
+        // The result should be very close to 5.0
+        assertEquals(5.0, result, 0.05)
     }
 }

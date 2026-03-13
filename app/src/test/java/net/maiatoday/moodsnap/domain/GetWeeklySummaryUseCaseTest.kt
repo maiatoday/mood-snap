@@ -5,10 +5,10 @@ import kotlinx.coroutines.test.runTest
 import net.maiatoday.moodsnap.data.FakeMoodRepository
 import net.maiatoday.moodsnap.data.MoodEntry
 import net.maiatoday.moodsnap.data.Tag
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.Calendar
 
 class GetWeeklySummaryUseCaseTest {
@@ -17,7 +17,7 @@ class GetWeeklySummaryUseCaseTest {
     private lateinit var resonanceEngine: ResonanceEngine
     private lateinit var getWeeklySummaryUseCase: GetWeeklySummaryUseCase
 
-    @Before
+    @BeforeEach
     fun setUp() {
         moodRepository = FakeMoodRepository()
         resonanceEngine = ResonanceEngine()

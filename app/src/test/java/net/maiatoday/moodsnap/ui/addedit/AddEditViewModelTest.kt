@@ -11,12 +11,12 @@ import kotlinx.coroutines.test.setMain
 import net.maiatoday.moodsnap.data.FakeMoodRepository
 import net.maiatoday.moodsnap.data.MoodEntry
 import net.maiatoday.moodsnap.data.Tag
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -26,13 +26,13 @@ class AddEditViewModelTest {
     private lateinit var repository: FakeMoodRepository
     private val testDispatcher = StandardTestDispatcher()
 
-    @Before
+    @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         repository = FakeMoodRepository()
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         Dispatchers.resetMain()
     }

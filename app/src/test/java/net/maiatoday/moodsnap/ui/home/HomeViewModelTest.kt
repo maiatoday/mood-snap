@@ -11,10 +11,10 @@ import kotlinx.coroutines.test.setMain
 import net.maiatoday.moodsnap.data.FakeMoodRepository
 import net.maiatoday.moodsnap.domain.GetWeeklySummaryUseCase
 import net.maiatoday.moodsnap.domain.ResonanceEngine
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
@@ -23,7 +23,7 @@ class HomeViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var weeklySummaryUseCase: GetWeeklySummaryUseCase
 
-    @Before
+    @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         repository = FakeMoodRepository()
@@ -40,7 +40,7 @@ class HomeViewModelTest {
         }
 
         val state = viewModel.summary.value
-        assertTrue("State should be null", state == null)
+        assertTrue(state == null, "State should be null")
         collectJob.cancel()
     }
 
@@ -58,7 +58,7 @@ class HomeViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
         
         val state = viewModel.summary.value
-        assertTrue("State should not be null", state != null)
-        assertEquals("Expected 8 days in weekly summary (7 days ago to today)", 8, state!!.dailyMoods.size)
+        assertTrue(state != null, "State should not be null")
+        assertEquals(8, state!!.dailyMoods.size, "Expected 8 days in weekly summary (7 days ago to today)")
     }
 }

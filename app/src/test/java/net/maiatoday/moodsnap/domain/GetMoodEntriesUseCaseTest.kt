@@ -5,9 +5,9 @@ import kotlinx.coroutines.test.runTest
 import net.maiatoday.moodsnap.data.FakeMoodRepository
 import net.maiatoday.moodsnap.data.MoodEntry
 import net.maiatoday.moodsnap.data.Tag
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.Date
 
 class GetMoodEntriesUseCaseTest {
@@ -15,7 +15,7 @@ class GetMoodEntriesUseCaseTest {
     private lateinit var moodRepository: FakeMoodRepository
     private lateinit var getMoodEntriesUseCase: GetMoodEntriesUseCase
 
-    @Before
+    @BeforeEach
     fun setUp() {
         moodRepository = FakeMoodRepository()
         getMoodEntriesUseCase = GetMoodEntriesUseCase(moodRepository)

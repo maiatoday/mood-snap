@@ -3,9 +3,9 @@ package net.maiatoday.moodsnap.data
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.Date
 
 class OfflineMoodRepositoryTest {
@@ -14,7 +14,7 @@ class OfflineMoodRepositoryTest {
     private lateinit var fakeMoodEntryDao: FakeMoodEntryDao
     private lateinit var fakeTagDao: FakeTagDao
 
-    @Before
+    @BeforeEach
     fun setup() {
         fakeMoodEntryDao = FakeMoodEntryDao()
         fakeTagDao = FakeTagDao()
