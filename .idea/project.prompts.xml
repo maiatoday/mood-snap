@@ -82,6 +82,21 @@
           <option name="name" value="04.04 Fix HomeScreen tags" />
           <option name="text" value="I see from the previous changes that `Updated GetWeeklySummaryUseCase: Temporarily returns empty tags (fix to compile).` could you fix this by creating the task getTagsForDataRange" />
         </PromptTemplate>
+        <PromptTemplate>
+          <option name="enabled" value="true" />
+          <option name="name" value="05.01 Research ResonanceEngine" />
+          <option name="text" value="Run the app in the emulator. I notice on the HomeScreen there is a new Resonance value. What is this value? How is it calculated? What does it mean for the user. Give me a tldr bullet point answer." />
+        </PromptTemplate>
+        <PromptTemplate>
+          <option name="enabled" value="true" />
+          <option name="name" value="05.02 ResonanceEngine detail" />
+          <option name="text" value="Give me more detail on what it actually means for a user" />
+        </PromptTemplate>
+        <PromptTemplate>
+          <option name="enabled" value="true" />
+          <option name="name" value="05.03 Migrate unit tests" />
+          <option name="text" value="Objective: Develop a comprehensive research-backed strategy to migrate the unit test suite from JUnit 4 to JUnit 5. The primary goal is to enable the use of JUnit 5's @ParameterizedTest for more robust testing of&#10;  the ResonanceEngine.&#10;&#10;  Your plan must address the following:&#10;&#10;&#10;   1. Infrastructure &amp; Dependencies: Identify the necessary updates for libs.versions.toml and app/build.gradle.kts. This includes adding the JUnit 5 Jupiter engine and evaluating the need for the android-junit5&#10;      Gradle plugin.&#10;   2. Lifecycle &amp; Annotation Migration: Detail the mapping of JUnit 4 annotations (e.g., @Test, @Before, @After, @Ignore) to their JUnit 5 equivalents.&#10;   3. Handling Rules &amp; Extensions: Analyze existing @Rule usage (e.g., InstantTaskExecutorRule or Hilt's HiltAndroidRule) and provide a strategy for migrating them to JUnit 5 @ExtendWith or equivalent extensions.&#10;      Highlight any known compatibility issues with Hilt and JUnit 5 in an Android environment.&#10;   4. ResonanceEngine Expansion: Design a specific step to rewrite ResonanceEngineTest.kt using @ParameterizedTest. Outline the input/output sets (e.g., @ValueSource, @MethodSource) needed to cover edge cases, mood&#10;      transitions, and tag interactions.&#10;   5. Audit of All Unit Tests: A phased approach to migrate all existing tests in app/src/test/ to ensure no regressions and consistent assertion styles (e.g., switching to org.junit.jupiter.api.Assertions).&#10;&#10;&#10;  Constraints: Identify any technical risks before proposing the timeline. Provide the plan only; do not implement any changes or modify files." />
+        </PromptTemplate>
       </list>
     </option>
   </component>
