@@ -1,14 +1,9 @@
 package net.maiatoday.moodsnap.ui.history
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import net.maiatoday.moodsnap.data.MoodEntry
-import net.maiatoday.moodsnap.data.MoodEntryWithTags
+import net.maiatoday.moodsnap.domain.MoodEntryDomain
 import java.util.Date
 
 @Composable
@@ -32,28 +27,8 @@ fun MoodHistoryScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        items(entries) { entryWithTags ->
-            MoodEntryItem(entryWithTags = entryWithTags, onClick = { onEntryClick(entryWithTags.moodEntry.id) })
-        }
-    }
-}
-
-@Composable
-fun MoodEntryItem(entryWithTags: MoodEntryWithTags, onClick: () -> Unit) {
-    val entry = entryWithTags.moodEntry
-    val tags = entryWithTags.tags.map { it.name }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable(onClick = onClick)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Score: ${entry.moodScore}")
-            Text("Tags: ${tags.joinToString()}")
-            Text("Notes: ${entry.notes}")
-            Text("Energy: ${entry.energy}")
+        items(entries) { entryDomain ->
+            MoodEntryItem(entryDomain = entryDomain, onClick = { onEntryClick(entryDomain.moodEntry.id) })
         }
     }
 }
@@ -71,9 +46,10 @@ fun MoodHistoryScreenPreview() {
         sunlight = true,
         sleep = true
     )
-    val sampleEntryWithTags = MoodEntryWithTags(
+    val sampleEntryDomain = MoodEntryDomain(
         moodEntry = sampleEntry,
-        tags = emptyList()
+        tags = emptyList(),
+        moodDescription = "Good"
     )
     
     LazyColumn(
@@ -81,8 +57,8 @@ fun MoodHistoryScreenPreview() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        items(listOf(sampleEntryWithTags)) { entry ->
-            MoodEntryItem(entryWithTags = entry, onClick = {})
+        items(listOf(sampleEntryDomain)) { entry ->
+            MoodEntryItem(entryDomain = entry, onClick = {})
         }
     }
 }
