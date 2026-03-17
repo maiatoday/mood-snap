@@ -21,8 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import net.maiatoday.moodsnap.domain.Mood
 import net.maiatoday.moodsnap.domain.MoodEntryDomain
+import net.maiatoday.moodsnap.ui.theme.MoodSnapTheme
+import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -89,5 +93,24 @@ fun MoodEntryItem(entryDomain: MoodEntryDomain, onClick: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MoodEntryItemPreview() {
+    MoodSnapTheme {
+        val sampleMoodEntry = MoodEntryDomain(
+            id = 1,
+            mood = Mood.GREAT,
+            notes = "Had a fantastic day!",
+            movement = true,
+            sunlight = true,
+            sleep = true,
+            energy = 5,
+            timestamp = Instant.now(),
+            tags = listOf("happy", "productive")
+        )
+        MoodEntryItem(entryDomain = sampleMoodEntry, onClick = {})
     }
 }
