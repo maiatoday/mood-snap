@@ -1,7 +1,10 @@
 package net.maiatoday.moodsnap.ui.history
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -11,12 +14,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -60,23 +67,44 @@ fun MoodEntryItem(entryDomain: MoodEntryDomain, onClick: () -> Unit) {
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = mood.emoji,
-                    style = MaterialTheme.typography.displaySmall,
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(8.dp)
-                )
+                ) {
+                    Text(
+                        text = mood.emoji,
+                        style = MaterialTheme.typography.displaySmall
+                    )
+                    Text(
+                        text = mood.score.toString(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
-                    Text(timestamp)
-                    Text("Description: ${mood.description}")
-                    Text("Score: ${mood.score}")
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            text = timestamp,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                    Text(text = mood.description, style = MaterialTheme.typography.headlineSmall)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Label,
                             contentDescription = "Tags"
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(entryDomain.tags.joinToString())
+                        Text(
+                            text = entryDomain.tags.joinToString(),
+                            modifier = Modifier.horizontalScroll(rememberScrollState())
+                        )
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -86,13 +114,43 @@ fun MoodEntryItem(entryDomain: MoodEntryDomain, onClick: () -> Unit) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(entryDomain.notes)
                     }
-                    Text("Energy: ${entryDomain.energy}")
-                    Text("Sleep: ${entryDomain.sleep}")
-                    Text("Movement: ${entryDomain.movement}")
-                    Text("Sunlight: ${entryDomain.sunlight}")
+                    Text("Energy: ${entryDomain.energy}/15")
+                    LinearProgressIndicator(
+                        progress = { entryDomain.energy / 15f },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        BooleanChip(label = "Sleep", value = entryDomain.sleep)
+                        BooleanChip(label = "Movement", value = entryDomain.movement)
+                        BooleanChip(label = "Sunlight", value = entryDomain.sunlight)
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun BooleanChip(label: String, value: Boolean, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        shape = CircleShape,
+        color = if (value) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+        contentColor = if (value) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+        border = if (value) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            style = MaterialTheme.typography.labelMedium
+        )
     }
 }
 
@@ -105,12 +163,26 @@ fun MoodEntryItemPreview() {
             mood = Mood.GREAT,
             notes = "Had a fantastic day!",
             movement = true,
-            sunlight = true,
+            sunlight = false,
             sleep = true,
             energy = 5,
             timestamp = Instant.now(),
-            tags = listOf("happy", "productive")
+            tags = listOf("happy", "productive", "energetic", "focused", "joyful", "active", "inspired")
         )
         MoodEntryItem(entryDomain = sampleMoodEntry, onClick = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BooleanChipPreview() {
+    MoodSnapTheme {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            BooleanChip(label = "True Chip", value = true)
+            BooleanChip(label = "False Chip", value = false)
+        }
     }
 }
