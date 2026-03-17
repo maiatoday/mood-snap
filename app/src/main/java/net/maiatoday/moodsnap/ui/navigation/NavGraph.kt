@@ -24,7 +24,8 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(Screen.History.route) {
             MoodHistoryScreen(
-                onEntryClick = { entryId -> navController.navigate(Screen.AddEdit.createRoute(entryId)) }
+                onEntryClick = { entryId -> navController.navigate(Screen.AddEdit.createRoute(entryId)) },
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable(
