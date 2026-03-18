@@ -20,8 +20,12 @@ class ResonanceEngineTest {
     }
 
     private fun createEntry(score: Int, daysAgo: Int): MoodEntryDomain {
+        return createEntryWithHours(score, daysAgo * 24)
+    }
+
+    private fun createEntryWithHours(score: Int, hoursAgo: Int): MoodEntryDomain {
         val now = Instant.now()
-        val timestamp = now.minus(Duration.ofDays(daysAgo.toLong()))
+        val timestamp = now.minus(Duration.ofHours(hoursAgo.toLong()))
         return MoodEntryDomain(
             id = 0,
             mood = Mood.fromScore(score),
@@ -33,6 +37,22 @@ class ResonanceEngineTest {
             timestamp = timestamp,
             tags = emptyList()
         )
+    }
+
+    @Test
+    fun `resonance updates smoothly within a single day`() {
+        // Two scenarios that should have different resonance if updates are smooth
+        val scoreNow = 5
+        val scorePast = 1
+        
+        // Scenario 1: Both entries are now
+        val resA = engine.compute(listOf(createEntryWithHours(scoreNow, 0), createEntryWithHours(scorePast, 0)))
+        
+        // Scenario 2: One entry is 12 hours ago
+        val resB = engine.compute(listOf(createEntryWithHours(scoreNow, 0), createEntryWithHours(scorePast, 12)))
+        
+        assertTrue(resB > resA, "Resonance ($resB) should be higher than $resA because the lower score is older")
+        assertTrue(resB < 5.0, "Resonance ($resB) should be less than 5.0")
     }
 
     @Test

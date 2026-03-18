@@ -31,9 +31,9 @@ class ResonanceEngine @Inject constructor() {
         var weightedSum = 0.0
 
         for (entry in entries) {
-            // Calculate time difference in days
+            // Calculate time difference in days (fractional)
             val duration = Duration.between(entry.timestamp, now)
-            val days = duration.toDays().toDouble()
+            val days = duration.toMillis().toDouble() / (24.0 * 60.0 * 60.0 * 1000.0)
             
             // Exponential decay formula: w = e^(-lambda * days)
             val weight = exp(-lambda * days)
