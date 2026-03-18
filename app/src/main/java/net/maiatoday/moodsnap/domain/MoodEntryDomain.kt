@@ -1,7 +1,9 @@
 package net.maiatoday.moodsnap.domain
 
+import androidx.compose.runtime.Immutable
 import java.time.Instant
 
+@Immutable
 data class MoodEntryDomain(
     val id: Int,
     val mood: Mood,
