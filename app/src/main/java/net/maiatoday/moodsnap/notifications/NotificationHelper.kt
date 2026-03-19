@@ -10,7 +10,6 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import net.maiatoday.moodsnap.MainActivity
-import net.maiatoday.moodsnap.R
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -51,7 +50,8 @@ open class NotificationHelper @Inject constructor(
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle("How are you feeling?")
             .setContentText("Time to log your mood.")
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with a proper icon
+            // Using a standard Android system icon to avoid any custom vector gradient crashes on real devices
+            .setSmallIcon(android.R.drawable.ic_popup_reminder)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()

@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
+import android.util.Log
 
 interface IReminderScheduler {
     fun scheduleReminder(hour: Int, minute: Int)
@@ -33,18 +34,22 @@ class ReminderScheduler @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
+        // Completely clear the calendar and start fresh
+        val calendar = Calendar.getInstance()
+        val now = calendar.timeInMillis
+        
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, minute)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
 
-            // If the time has already passed today, schedule for tomorrow
-            if (timeInMillis <= System.currentTimeMillis()) {
-                add(Calendar.DAY_OF_YEAR, 1)
-            }
+        // If the time has already passed today, schedule for tomorrow
+        if (calendar.timeInMillis <= now) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
+        
+        Log.d("ReminderScheduler", "Current time: ${java.util.Date(now)}")
+        Log.d("ReminderScheduler", "Scheduling inexact repeating alarm for: ${calendar.time}")
 
         // Use inexact repeating to respect system battery optimizations
         alarmManager.setInexactRepeating(

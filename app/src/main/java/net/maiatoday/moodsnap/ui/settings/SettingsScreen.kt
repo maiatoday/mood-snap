@@ -61,13 +61,14 @@ fun SettingsScreen(
     }
 
     // Keep track of whether the user intent was to enable the reminder
-    // so we can enable it automatically once permission is granted.
     var pendingReminderEnable by remember { mutableStateOf(false) }
 
-    // Listen for permission status changes
+    // Listen for notification permission status changes
     LaunchedEffect(notificationPermissionState?.status) {
         if (notificationPermissionState?.status?.isGranted == true && pendingReminderEnable) {
             viewModel.toggleReminder(true)
+            pendingReminderEnable = false
+        } else if (notificationPermissionState?.status?.isGranted == false && pendingReminderEnable) {
             pendingReminderEnable = false
         }
     }
@@ -79,15 +80,12 @@ fun SettingsScreen(
         onToggleReminder = { isChecked ->
             if (isChecked) {
                 if (notificationPermissionState != null && !notificationPermissionState.status.isGranted) {
-                    // Request permission if not granted on Android 13+
                     pendingReminderEnable = true
                     notificationPermissionState.launchPermissionRequest()
                 } else {
-                    // Already granted or Android < 13
                     viewModel.toggleReminder(true)
                 }
             } else {
-                // Turning it off
                 pendingReminderEnable = false
                 viewModel.toggleReminder(false)
             }
